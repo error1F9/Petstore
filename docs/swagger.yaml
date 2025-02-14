@@ -1,0 +1,574 @@
+definitions:
+  controller.DataPets:
+    properties:
+      message:
+        type: string
+      pets:
+        items:
+          $ref: '#/definitions/entity.Pet'
+        type: array
+    type: object
+  controller.DeleteOrderResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      message:
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  controller.GetUserResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      success:
+        example: true
+        type: boolean
+      user:
+        $ref: '#/definitions/entity.User'
+    type: object
+  controller.GetUsersResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      success:
+        example: true
+        type: boolean
+      user:
+        items:
+          $ref: '#/definitions/entity.User'
+        type: array
+    type: object
+  controller.InventoryResponse:
+    type: object
+  controller.LogoutResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        example: Logiut success
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  controller.PetFindByStatusResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        $ref: '#/definitions/controller.DataPets'
+      success:
+        example: true
+        type: boolean
+    type: object
+  controller.PetResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      success:
+        example: true
+        type: boolean
+    type: object
+  controller.PetResponseData:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        $ref: '#/definitions/models_pet_controller.Data'
+      success:
+        example: true
+        type: boolean
+    type: object
+  controller.PlaceOrderResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        $ref: '#/definitions/models_store_controller.Data'
+      success:
+        example: true
+        type: boolean
+    type: object
+  entity.Category:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  entity.Order:
+    properties:
+      complete:
+        type: boolean
+      id:
+        type: integer
+      pet_id:
+        type: integer
+      quantity:
+        type: integer
+      ship_date:
+        type: string
+      status:
+        type: string
+    type: object
+  entity.Pet:
+    properties:
+      category:
+        $ref: '#/definitions/entity.Category'
+      category_id:
+        type: integer
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        $ref: '#/definitions/entity.PetStatus'
+    type: object
+  entity.PetStatus:
+    enum:
+    - available
+    - pending
+    - sold
+    type: string
+    x-enum-varnames:
+    - PetStatusAvailable
+    - PetStatusPending
+    - PetStatusSold
+  entity.User:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      user_status:
+        type: integer
+      username:
+        type: string
+    type: object
+  models_pet_controller.Data:
+    properties:
+      message:
+        type: string
+      pet:
+        $ref: '#/definitions/entity.Pet'
+    type: object
+  models_store_controller.Data:
+    properties:
+      message:
+        type: string
+      pet:
+        $ref: '#/definitions/entity.Order'
+    type: object
+info:
+  contact: {}
+  title: My Petstore
+  version: "1.0"
+paths:
+  /pet:
+    post:
+      consumes:
+      - application/json
+      description: Add a new pet to the store
+      parameters:
+      - description: Pet object that needs to be added to the store
+        in: body
+        name: pet
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Pet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.PetResponse'
+      summary: Add a pet
+      tags:
+      - pet
+    put:
+      consumes:
+      - application/json
+      description: Update an existing pet
+      parameters:
+      - description: Pet object that needs to be updated
+        in: body
+        name: pet
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Pet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.PetResponse'
+      summary: Update a pet
+      tags:
+      - pet
+  /pet/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a pet by ID
+      parameters:
+      - description: ID of pet to delete
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.PetResponse'
+      summary: Delete a pet by ID
+      tags:
+      - pet
+    get:
+      consumes:
+      - application/json
+      description: Returns a single pet
+      parameters:
+      - description: ID of pet to return
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.PetResponseData'
+      summary: Find pet by ID
+      tags:
+      - pet
+    post:
+      consumes:
+      - application/json
+      description: Updates pet in the store with form data
+      parameters:
+      - description: ID of pet that needs to be updated
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Pet object that needs to be updated
+        in: body
+        name: pet
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Pet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.PetResponse'
+      summary: Update a pet by ID
+      tags:
+      - pet
+  /pet/findByStatus:
+    get:
+      consumes:
+      - application/json
+      description: Multiple status values can be provided with comma separated strings
+      parameters:
+      - description: Status values that need to be considered for filter
+        enum:
+        - available
+        - pending
+        - sold
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.PetFindByStatusResponse'
+      summary: Find pets by status
+      tags:
+      - pet
+  /store/inventory:
+    get:
+      consumes:
+      - application/json
+      description: Return pet inventories by status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.InventoryResponse'
+      summary: Returns pet inventories by status
+      tags:
+      - store
+  /store/order:
+    post:
+      consumes:
+      - application/json
+      description: Returns a map of status codes to quantities
+      parameters:
+      - description: order placed for purchasing the pet
+        in: body
+        name: Order
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.PlaceOrderResponse'
+      summary: Place an order for a pet
+      tags:
+      - store
+  /store/order/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deleting purchased order by ID
+      parameters:
+      - description: ID of order to delete
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.DeleteOrderResponse'
+      summary: Delete purchased order by ID
+      tags:
+      - store
+    get:
+      consumes:
+      - application/json
+      description: Returning order by id
+      parameters:
+      - description: ID of order to return
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.PlaceOrderResponse'
+      summary: Find purchased order by ID
+      tags:
+      - store
+  /user:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the provided data
+      parameters:
+      - description: User data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entity.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User created
+          schema:
+            $ref: '#/definitions/controller.LogoutResponse'
+      summary: Create a new user
+      tags:
+      - user
+  /user/{username}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user by username
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted
+          schema:
+            $ref: '#/definitions/controller.LogoutResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a user
+      tags:
+      - user
+    get:
+      consumes:
+      - application/json
+      description: Retrieve user data by username
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User data
+          schema:
+            $ref: '#/definitions/controller.GetUserResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get user information
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Update user data by username
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: User update data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entity.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated user data
+          schema:
+            $ref: '#/definitions/controller.GetUserResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update user information
+      tags:
+      - user
+  /user/createWithArray:
+    post:
+      consumes:
+      - application/json
+      description: Create multiple users with an array of user data
+      parameters:
+      - description: Array of user data
+        in: body
+        name: body
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/entity.User'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Users created
+          schema:
+            $ref: '#/definitions/controller.GetUsersResponse'
+      summary: Create users with an array
+      tags:
+      - user
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user by username and password
+      parameters:
+      - description: Username
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: Password
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Access token
+          schema:
+            type: string
+      summary: User login
+      tags:
+      - user
+  /user/logout:
+    post:
+      consumes:
+      - application/json
+      description: Terminate the user session
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Logout success
+          schema:
+            $ref: '#/definitions/controller.LogoutResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: User logout
+      tags:
+      - user
+securityDefinitions:
+  ApiKeyAuth:
+    description: Type "Bearer" followed by a space and the JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
+tags:
+- description: Access to Petstore orders
+  name: pet
+- description: Everything about your Pets
+  name: store
+- description: Operations about user
+  name: user
